@@ -1,0 +1,86 @@
+#include <iostream>
+#include <GL/glut.h>
+using namespace std;
+class Edge {
+public:
+int yMin, yMax;
+float xMin, slope;
+Edge(int ymin, int ymax, float xmin, float sl) {
+yMin = ymin;
+yMax = ymax;
+xMin = xmin;
+slope = sl;
+}
+};
+void setPixel(int x, int y, float* color) {
+glBegin(GL_POINTS);
+glColor3fv(color);
+glVertex2i(x, y);
+glEnd();
+glFlush();
+}
+void drawScanLine(int y, Edge* edges, int numEdges, float* color) {
+for (int i = 0; i < numEdges; ++i) {
+if (y >= edges[i].yMin && y <= edges[i].yMax) {
+float x = edges[i].xMin + edges[i].slope * (y - edges[i].yMin);
+setPixel(static_cast<int>(x), y, color);
+}
+}
+}
+void scanLineFill(Edge* edges, int numEdges, float* color) {
+int minY = edges[0].yMin;
+int maxY = edges[0].yMin;
+for (int i = 1; i < numEdges; ++i) {
+if (edges[i].yMin < minY) {
+minY = edges[i].yMin;
+}
+if (edges[i].yMax > maxY) {
+maxY = edges[i].yMax;
+}
+}
+for (int y = minY; y <= maxY; ++y) {
+drawScanLine(y, edges, numEdges, color);
+}
+}
+void drawW() {
+glBegin(GL_LINES);
+glVertex2i(50, 50);
+glVertex2i(100, 200);
+glVertex2i(100, 200);
+glVertex2i(150, 50);
+glVertex2i(150, 50);
+glVertex2i(200, 200);
+glVertex2i(200, 200);
+glVertex2i(250, 50);
+glVertex2i(250, 50);
+glVertex2i(300, 200);
+glEnd();
+}
+void display() {
+glClearColor(0.0, 0.0, 0.0, 1.0); // Set background color to black
+glClear(GL_COLOR_BUFFER_BIT);
+float fillColor[] = {0.0, 0.0, 1.0}; // Blue color for filling
+Edge edges[] = {{50, 200, 50, 0.5}, {50, 200, 100, 1.0}, {50, 200, 150, -
+0.5}, {50, 200, 200, 1.0}, {50, 200, 250, -0.5}, {50, 200, 300, 1.0}};
+scanLineFill(edges, sizeof(edges) / sizeof(edges[0]), fillColor);
+glColor3f(1.0, 1.0, 1.0); // Set line color to white
+drawW();
+glFlush();
+}
+void reshape(int w, int h) {
+glViewport(0, 0, w, h);
+glMatrixMode(GL_PROJECTION);
+glLoadIdentity();
+gluOrtho2D(0, w, 0, h);
+glMatrixMode(GL_MODELVIEW);
+}
+int main(int argc, char** argv) {
+glutInit(&argc, argv);
+glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+glutInitWindowSize(400, 400);
+glutCreateWindow("Scan Line Algorithm - Letter W");
+glutDisplayFunc(display);
+glutReshapeFunc(reshape);
+glutMainLoop();
+return 0;
+}

@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <math.h>
+#include <GL/glut.h>
+int xc, yc;
+
+void drawLine(int x1, int y1, int x2, int y2) {
+ int dx = abs(x2 - x1);
+ int dy = abs(y2 - y1);
+ int sx = (x1 < x2) ? 1 : -1;
+ int sy = (y1 < y2) ? 1 : -1;
+ int err = dx - dy;
+ glBegin(GL_POINTS);
+ while (true) {
+ glVertex2i(x1, y1);
+ if (x1 == x2 && y1 == y2)
+ break;
+ int e2 = 2 * err;
+ if (e2 > -dy) {
+ err -= dy;
+ x1 += sx;
+ }
+ if (e2 < dx) {
+ err += dx;
+ y1 += sy;
+ }
+ }
+ glEnd();
+}
+void plot_point(int x, int y)
+{
+ glBegin(GL_POINTS);
+ glVertex2i(xc + x, yc + y);
+ glVertex2i(xc + x, yc - y);
+ glVertex2i(xc + y, yc + x);
+ glVertex2i(xc + y, yc - x);
+ glVertex2i(xc - x, yc - y);
+ glVertex2i(xc - y, yc - x);
+ glVertex2i(xc - x, yc + y);
+ glVertex2i(xc - y, yc + x);
+ glEnd();
+}
+
+void bresenham_circle(int x1, int y1, int r)
+{
+ xc = x1;
+ yc = y1;
+ int x = 0, y = r;
+ float pk = (5.0 / 4.0) - r;
+ plot_point(x, y);
+ while (x < y)
+ {
+ x = x + 1;
+ if (pk < 0)
+ pk = pk + 2 * x + 1;
+ else
+ {
+ y = y - 1;
+ pk = pk + 2 * (x - y) + 1;
+ }
+ plot_point(x, y);
+ }
+}
+void concentric_circles(void)
+{
+ glClear(GL_COLOR_BUFFER_BIT); // Clear the color buffer
+//with white
+ int radius1 = 50;
+ glColor3f(1, 1, 1);
+ bresenham_circle(150, 275, radius1);
+ for(int i=15;i<=25;i++)
+ {
+ glColor3f(1, 1, 1);
+ bresenham_circle(150, 275, i);
+ }
+ for(int i=0;i<20;i++)
+ {glColor3f(0, 0, 1);
+ bresenham_circle(150, 275, i);
+ }
+ glColor3f(1, 0, 0);
+ drawLine(150,300,193,300);
+ glColor3f(0, 1, 0);
+ drawLine(127,262.5,107.5,300);
+ glColor3f(1,1, 0);
+ drawLine(150,225,172,262.5);
+ glFlush();
+}
+void Init()
+{
+ glClearColor(0, 0, 0, 0); // Set the clear color to white
+ glOrtho(-0, 500, -0, 500, -250, 250);
+}
+int main(int argc, char **argv)
+{
+ glutInit(&argc, argv);
+ glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+ glutInitWindowPosition(0, 0);
+ glutInitWindowSize(500, 500);
+ glutCreateWindow("Bresenham Circle");
+ Init();
+ glutDisplayFunc(concentric_circles);
+ glutMainLoop();
+ return 0;
+}

@@ -1,0 +1,79 @@
+#include <GL/glut.h>
+#include <stdio.h>
+
+int xc, yc, r;
+
+void myInit() {
+  glClearColor(0.0, 0.0, 0.0, 1.0);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(-250, 500, -250, 500, -250, 250);
+}
+
+void draw_pixel(int x, int y) {
+  glBegin(GL_POINTS);
+  glVertex2i(x, y);
+  glEnd();
+}
+
+void draw_circle(int xc, int yc, int x, int y, float r, float g, float b) {
+  glColor3f(r, g, b);
+  draw_pixel(xc + x, yc + y);
+  draw_pixel(xc - x, yc + y);
+  draw_pixel(xc + x, yc - y);
+  draw_pixel(xc - x, yc - y);
+  draw_pixel(xc + y, yc + x);
+  draw_pixel(xc - y, yc + x);
+  draw_pixel(xc + y, yc - x);
+  draw_pixel(xc - y, yc - x);
+}
+
+void circle_bres(int xc, int yc, int r, float r_color, float g_color, float b_color) {
+  int x = 0, y = r;
+  int d = 3 - 2 * r;
+  draw_circle(xc, yc, x, y, r_color, g_color, b_color);
+  while (y >= x) {
+    x++;
+    if (d > 0) {
+      y--;
+      d = d + 4 * (x - y) + 10;
+    } else {
+      d = d + 4 * x + 6;
+    }
+    draw_circle(xc, yc, x, y, r_color, g_color, b_color);
+  }
+}
+
+void myDisplay() {
+  // Olympic ring colors
+  float colors[][3] = {
+    {0.0, 0.0, 1.0},  // Blue
+    {1.0, 1.0, 0.0},  // Yellow
+    {1.0, 1.0, 1.0},  // Black
+    {0.0, 1.0, 0.0},  // Green
+    {1.0, 0.0, 0.0}   // Red
+  };
+
+  circle_bres(xc, yc, r, colors[0][0], colors[0][1], colors[0][2]);
+  circle_bres(xc + 2.3 * r, yc, r, colors[1][0], colors[1][1], colors[1][2]);
+  circle_bres(xc + 4.6 * r, yc, r, colors[2][0], colors[2][1], colors[2][2]);
+  circle_bres(xc + r * 1.2, yc - 1.09 * r, r, colors[3][0], colors[3][1], colors[3][2]);
+  circle_bres(xc + r + 2.5 * r, yc - 1.09 * r, r, colors[4][0], colors[4][1], colors[4][2]);
+
+  glFlush();
+}
+
+int main(int argc, char** argv) {
+  printf("Enter (xc, yc, r)\n");
+  scanf("%d %d %d", &xc, &yc, &r);
+
+  glutInit(&argc, argv);
+  glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+  glutInitWindowSize(500, 500);
+  glutInitWindowPosition(0, 0);
+  glutCreateWindow("Olympic Rings");
+  myInit();
+  glutDisplayFunc(myDisplay);
+  glutMainLoop();
+  return 0;
+}

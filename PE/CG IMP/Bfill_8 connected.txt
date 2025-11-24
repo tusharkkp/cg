@@ -1,0 +1,94 @@
+#include <iostream>
+
+#include<GL/glut.h>
+
+using namespace std;
+
+void init()
+{
+    glMatrixMode(GL_PROJECTION);
+    gluOrtho2D(0,640,0,480);
+
+}
+void bFill(int x, int y, float* fillcolor , float* bc)
+{
+
+    float color[3];
+    glReadPixels(x,y,1.0,1.0,GL_RGB ,GL_FLOAT ,color);
+    if((color[0]!=bc[0] || color[1]!=bc[1] || color[2]!=bc[2] )  && ( color[0]!=fillcolor[0] || color[1]!=fillcolor[1] || color[2]!=fillcolor[2]  ))
+    {
+
+        glColor3f(fillcolor[0], fillcolor[1] , fillcolor[2]);
+        glBegin(GL_POINTS);
+        glVertex2i(x,y);
+        glEnd();
+        glFlush();
+        bFill(x+1,y,fillcolor,bc);
+        bFill(x-2,y,fillcolor,bc);
+        bFill(x,y+2,fillcolor,bc);
+        bFill(x,y-2,fillcolor,bc);
+        bFill(x-1,y-1,fillcolor, bc);
+        bFill(x-1,y+1,fillcolor, bc);
+        bFill(x+1,y-1,fillcolor, bc);
+        bFill(x+1,y+1,fillcolor, bc);
+
+    }
+}
+
+
+void display()
+{
+    glLineWidth(3);
+    glPointSize(2);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(1.0,0.0,0.0);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(250.0f, 400.0f);
+    glVertex2f(150.0f, 200.0f);
+    glVertex2f(350.0f, 200.0f);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(250.0f, 100.0f);
+    glVertex2f(150.0f, 300.0f);
+    glVertex2f(350.0f, 300.0f);
+    glEnd();
+
+    glFlush();
+
+    float bColor5[] = {1,0,0};
+    float colorr5[] = {1,1,0};
+    bFill(320,270,colorr5,bColor5);
+    float bColor4[] = {1,0,0};
+    float colorr4[] = {0,1,1};
+    bFill(320,230,colorr4,bColor4);
+    float bColor2[] = {1,0,0};
+    float colorr2[] = {0,1,1};
+    bFill(180,270,colorr2,bColor2);
+    float bColor3[] = {1,0,0};
+    float colorr3[] = {1,1,0};
+    bFill(180,230,colorr3,bColor3);
+    float bCol[] = {1,0,0};
+    float color[] = {0,0,1};
+    bFill(250,250,color,bCol);
+    float bColor[] = {1,0,0};
+    float colorr[] = {0,1,0};
+    bFill(250,350,colorr,bColor);
+    float bColor1[] = {1,0,0};
+    float colorr1[] = {0,1,0};
+    bFill(250,150,colorr1,bColor1);
+}
+
+
+int main(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitWindowSize(640,480);
+    glutInitWindowPosition(200,200);
+    glutCreateWindow("Boundry Fill");
+    glutDisplayFunc(display);
+    init();
+    glutMainLoop();
+    return 0;
+}

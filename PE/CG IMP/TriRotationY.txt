@@ -1,0 +1,66 @@
+#include <GL/glut.h>
+#include <cmath>
+
+GLfloat triangleVertices[] = {
+    0.0f, 1.0f,  // Vertex 1 (top)
+   -1.0f, -1.0f, // Vertex 2 (bottom-left)
+    1.0f, -1.0f  // Vertex 3 (bottom-right)
+};
+
+GLfloat rotationAngle = 0.0f;
+
+void drawTriangle() {
+    glColor3f(1.0f, 0.0f, 0.0f); // Set color to red
+
+    glBegin(GL_TRIANGLES);
+    for (int i = 0; i < 6; i += 2) {
+        glVertex2f(triangleVertices[i], triangleVertices[i + 1]);
+    }
+    glEnd();
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glPushMatrix(); // Save the current matrix
+    glRotatef(rotationAngle, 0.0f, 0.0f, 1.0f); // Rotate about the z-axis
+
+    drawTriangle();
+
+    glPopMatrix(); // Restore the saved matrix
+
+    glutSwapBuffers();
+}
+
+void update(int value) {
+    rotationAngle += 1.0f;
+    if (rotationAngle > 360.0f) {
+        rotationAngle -= 360.0f;
+    }
+
+    glutPostRedisplay();
+    glutTimerFunc(16, update, 0); // Redraw every 16 milliseconds
+}
+
+void init() {
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // Set background color to white
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(-2.0, 2.0, -2.0, 2.0); // Set the viewing area
+
+    glMatrixMode(GL_MODELVIEW);
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutCreateWindow("Rotating Triangle");
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    init();
+    glutDisplayFunc(display);
+    glutTimerFunc(25, update, 0); // Call update every 25 milliseconds
+    glutMainLoop();
+    return 0;
+}
