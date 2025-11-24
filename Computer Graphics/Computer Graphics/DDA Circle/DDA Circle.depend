@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1760020007 source:c:\users\yrugw\onedrive\documents\computer graphics\dda circle\main.cpp
+	<GL/glut.h>
+	<iostream>
+

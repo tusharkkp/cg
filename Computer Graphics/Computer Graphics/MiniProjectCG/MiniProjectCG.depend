@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1760336716 source:c:\users\yrugw\onedrive\documents\computer graphics\miniprojectcg\main.cpp
+	<GL/glut.h>
+	<cmath>
+	<vector>
+	<cstdlib>
+	<ctime>
+	<iostream>
+	<sstream>
+	<algorithm>
+
